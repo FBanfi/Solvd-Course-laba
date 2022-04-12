@@ -9,7 +9,7 @@ import java.util.*;
 public class TextCalculator {
 
     public static void main(String[] args) throws IOException {
-        File txt = new File("/home/coco/Workspace/Library-Solvd-Laba/src/main/resources/robotTeachers.txt");
+        File txt = new File("/home/coco/Workspace/Solvd-Course-laba/src/main/resources/robotTeachers.txt");
 
         Map<String, Integer> words = new HashMap<>();
         List<String> list = new ArrayList<>();
@@ -22,6 +22,6 @@ public class TextCalculator {
 
         words.keySet().forEach(key -> list.add(key + " - " + words.get(key)));
 
-        FileUtils.writeLines(new File("/home/coco/Workspace/Library-Solvd-Laba/src/main/resources/output.txt"), list);
+        FileUtils.writeLines(new File("/home/coco/Workspace/Solvd-Course-laba/src/main/resources/output.txt"), list);
     }
 }
