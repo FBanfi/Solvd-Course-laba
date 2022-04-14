@@ -5,9 +5,11 @@ import com.solvd.library.bookRequest.BookRequest;
 import com.solvd.library.bookshelf.AdultBookshelf;
 import com.solvd.library.bookshelf.Bookshelf;
 import com.solvd.library.bookshelf.ChildBookshelf;
+import com.solvd.library.functionalInterfaces.IClose;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //SINGLETON
 public class Librarian extends Person {
@@ -19,30 +21,31 @@ public class Librarian extends Person {
         return INSTANCE;
     }
 
+    public void closeLibrary(IClose closer) {
+        closer.closeLibrary();
+    }
+
     @Override
     public List<Book> findInformation(String topic) {
-        if (level.equals(LevelOfAccess.BOOKSHELFS) || level.equals(LevelOfAccess.ALL_LIBRARY) || level.equals(LevelOfAccess.CASH_AND_BOOKSHELFS))
+        if (level.equals(LevelOfAccess.BOOKSHELFS) || level.equals(LevelOfAccess.ALL_LIBRARY) ||
+                level.equals(LevelOfAccess.CASH_AND_BOOKSHELFS) && level.getNumberOfKeys() > 0)
             return findTopicInBookshelfs(topic);
         else
             return null;
     }
 
     public Book findInBookShelf(BookRequest bookRequest, Client client) {
-        for (Book book : booksAvailable(bookRequest, client)) {
-            if (book.getName().equals(bookRequest.getName())) {
-                return validateOtherFields(book, bookRequest);
-            }
-        }
-        return null;
+        List<Book> books = booksAvailable(bookRequest, client).stream().filter(book -> book.getName().equals(bookRequest.getName())).collect(Collectors.toList());
+        return validateOtherFields(books.stream().findFirst().get(), bookRequest);
     }
 
     public List<Book> findTopicInBookshelfs(String topic) {
         List<Book> booksOfThatTopic = new ArrayList<Book>();
-        for (Book book : booksAvailable()) {
+        booksAvailable().stream().forEach(book -> {
             if (book.getTopic().equals(topic)) {
                 booksOfThatTopic.add(book);
             }
-        }
+        });
         return booksOfThatTopic;
     }
 
@@ -56,16 +59,16 @@ public class Librarian extends Person {
     private List<Book> booksAvailable(BookRequest bookRequest, Client client) {
         List<Book> booksWanted = new ArrayList<>();
         TypeOfAuthorContent content = bookRequest.getAuthor().getContent();
-        if (content.toString().equals("ADULT")) {   //&& client.getAge()>=content.getMinimunAge() I dkw why this doesnt work
-            for (Bookshelf bookshelf : bookshelfs) {
+        if (content.toString().equals("ADULT") && client.getAge() >= content.getMinimunAge()) {
+            bookshelfs.stream().forEach(bookshelf -> {
                 bookshelf.getClass().equals(AdultBookshelf.class);
                 booksWanted.addAll(bookshelf.getBooksAvailable());
-            }
+            });
         } else {
-            for (Bookshelf bookshelf : bookshelfs) {
+            bookshelfs.stream().forEach(bookshelf -> {
                 bookshelf.getClass().equals(ChildBookshelf.class);
                 booksWanted.addAll(bookshelf.getBooksAvailable());
-            }
+            });
         }
         return booksWanted;
     }

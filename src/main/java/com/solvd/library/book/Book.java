@@ -67,13 +67,8 @@ public abstract class Book {
 
     private Boolean validateAuthenticity() {
         List<Book> books = this.author.getBooksRealesed();
-        for (Book book : books) {
-            if (book.hashCode() == this.hashCode()) {
-                if (book.equals(this))
-                    return true;
-            }
-        }
-        return false;
+
+        return books.stream().anyMatch(book -> book.hashCode() == this.hashCode() && book.equals(this));
     }
 
     public abstract void calculateCost();

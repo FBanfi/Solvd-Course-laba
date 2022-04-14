@@ -6,6 +6,8 @@ import com.solvd.library.book.TypeOfBook;
 import com.solvd.library.bookRequest.BookRequest;
 import com.solvd.library.bookRequest.OnlineRequest;
 import com.solvd.library.bookRequest.PresencialRequest;
+import com.solvd.library.functionalInterfaces.IRead;
+import com.solvd.library.functionalInterfaces.ISell;
 import com.solvd.library.person.document.Document;
 import com.solvd.library.person.payment.IPay;
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +24,8 @@ public class Client extends Person {
     private int money;
     private IPay payMethod;
 
-    public Client(String name, int age,String address, Boolean isLibrarian, Document document, Stack<Book> ownedBooks, Stack<Book> borrowedBooks, Boolean onlineClient, int money, IPay payMethod) {
-        super(name, age,address, isLibrarian, document);
+    public Client(String name, int age, String address, Boolean isLibrarian, Document document, Stack<Book> ownedBooks, Stack<Book> borrowedBooks, Boolean onlineClient, int money, IPay payMethod) {
+        super(name, age, address, isLibrarian, document);
         this.ownedBooks = ownedBooks;
         this.borrowedBooks = borrowedBooks;
         this.onlineClient = onlineClient;
@@ -35,6 +37,14 @@ public class Client extends Person {
         randomBook.calculateCost();
         setMoney(money - payMethod.pay(randomBook.getCost()));
         ownedBooks.add(randomBook);
+    }
+
+    public void readBook(IRead reader) {
+        reader.read();
+    }
+
+    public void sellBook(ISell seller, Book book) {
+        seller.sell(book);
     }
 
     @Override

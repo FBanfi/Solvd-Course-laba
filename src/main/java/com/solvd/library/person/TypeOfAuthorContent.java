@@ -1,14 +1,16 @@
 package com.solvd.library.person;
 
 public enum TypeOfAuthorContent {
-    ADULT {
-        public int getMinimunAge(){
-            return 18;
-        }
-    },
-    CHILD {
-        public int getMinimunAge(){
-            return 14;
-        }
+    ADULT(18),
+    CHILD(14);
+
+    private int age;
+
+    TypeOfAuthorContent(int age) {
+        this.age = age;
+    }
+
+    public int getMinimunAge() {
+        return this.age;
     }
 }

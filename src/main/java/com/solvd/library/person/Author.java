@@ -24,10 +24,10 @@ public class Author extends Person {
     @Override
     public List<Book> findInformation(String topic) {
         List<Book> booksOfThatTopic = new ArrayList<Book>();
-        for (Book book : booksRealesed) {
+        booksRealesed.stream().forEach(book -> {
             if (book.getTopic().equals(topic))
                 booksOfThatTopic.add(book);
-        }
+        });
         return booksOfThatTopic;
     }
 

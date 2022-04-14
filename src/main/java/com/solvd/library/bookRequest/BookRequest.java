@@ -32,10 +32,7 @@ public abstract class BookRequest {
         listOfValidations.add(new CopyRightValidator());
         listOfValidations.add(new NullBookRequestValidator());
 
-        for (IValidate validator : listOfValidations) {
-            validator.validate(name, preference, pages, author);
-        }
-
+        listOfValidations.stream().forEach(validator -> validator.validate(name, preference, pages, author));
     }
 
     public BookRequest(String topic) {

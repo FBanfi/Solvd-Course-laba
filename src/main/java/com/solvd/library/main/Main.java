@@ -7,6 +7,9 @@ import com.solvd.library.bookshelf.ChildBookshelf;
 import com.solvd.library.bookshelf.cleaning.HighAltitude;
 import com.solvd.library.bookshelf.cleaning.LowAltitude;
 import com.solvd.library.bookshelf.cleaning.MediumAltitud;
+import com.solvd.library.functionalInterfaces.IClose;
+import com.solvd.library.functionalInterfaces.IRead;
+import com.solvd.library.functionalInterfaces.ISell;
 import com.solvd.library.person.Author;
 import com.solvd.library.person.Client;
 import com.solvd.library.person.Librarian;
@@ -37,7 +40,7 @@ public class Main {
         Document documentFran = new Document(dni, "42045030");
         Document documentCoco = new Document(passport, "410045030");
 
-        Author jkRolling = new Author("Joanne Rowling", 56,"England", false, documentFran, new ArrayList<Book>(), new ArrayDeque<Book>(), TypeOfAuthorContent.CHILD, 10);
+        Author jkRolling = new Author("Joanne Rowling", 56, "England", false, documentFran, new ArrayList<Book>(), new ArrayDeque<Book>(), TypeOfAuthorContent.CHILD, 10);
         Author stephenKing = new Author("Stephen King", 76, "EEUU", false, documentFran, new ArrayList<Book>(), new ArrayDeque<Book>(), TypeOfAuthorContent.ADULT, 9);
 
         Book harryPotter1 = new EspecialEditionBook("Harry Potter and the goblet of fire", 400, jkRolling,
@@ -94,38 +97,43 @@ public class Main {
         coco.addToOwnedBooks(harryPotter1);
         coco.addToOwnedBooks(it);
 
+        //--------------------------------
         //BUSINESS QUESTION IMPLEMENTATION
+        //--------------------------------
 
-        //CLIENT
+        //-------CLIENT-------
         //FIND INFORMATION
         List<Book> books = coco.findInformation("Entertainment");
         LOGGER.info("The books that contains information about the topic you want are this ones: ");
         List<String> namesSeen = new ArrayList<String>();
-        for (Book book : books) {
-            if (namesSeen.contains(book.getName())) {
-                continue;
-            } else {
+        books.stream().forEach(book -> {
+            if (!namesSeen.contains(book.getName())) {
                 LOGGER.info("Name: " + book.getName() + ", " + "type: " + book.getType().getValue());
                 namesSeen.add(book.getName());
             }
-        }
-
+        });
         LOGGER.info("You can buy them");
-
         //FIND BOOK
         Book requestedBook = coco.findBook("Harry Potter and the goblet of fire", TypeOfBook.FANTASY, 400, jkRolling);
         LOGGER.info("The book you have requested is this one " + requestedBook);
-
         //BUY BOOK
         coco.buyBook(requestedBook);
         LOGGER.info("The librarian will give you the book to you in a second when he verify the payment");
+        //READ BOOK
+        coco.readBook(() -> coco.getBorrowedBooks().add(harryPotter2));
+        //SELL A BOOK
+        ISell seller = book -> coco.setMoney(coco.getMoney() + book.getCost());
+        coco.sellBook(seller, harryPotter1);
 
-        //LIBRARIAN
+        //-------LIBRARIAN-------
         //GET SUPPLYMENT
         supplier1.supplyLibrary();
         LOGGER.warn("Check if the books that the supplier gave to you are already charged in the system!!");
         List<Bookshelf> allBookshelf = Librarian.instance().getBookshelfs();
         //CLEAN BOOKSHELFS
         allBookshelf.get(allBookshelf.size() - 1).cleanBookshelf();
+        //CLOSE LIBRARY
+        IClose close = () -> LOGGER.info("The library is closed, you can't buy books, please leave the library");
+        Librarian.instance().closeLibrary(close);
     }
 }
