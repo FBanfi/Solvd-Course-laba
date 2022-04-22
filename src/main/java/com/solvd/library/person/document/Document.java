@@ -6,6 +6,9 @@ public class Document {
     private IValidateDocument type;
     private String number;
 
+    public Document() {
+    }
+
     public Document(IValidateDocument type, String number) {
         this.type = type;
         type.validateDocument(number);
